@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>MPI - Berpancasila di Tengah Kehidupan Global</title>
+    <style>
+:root {
+        --primary: #C62828;      
+        --primary-light: #EF5350;
+        --accent: #1565C0;       
+        --bg-main: #F8F9FA;      
+        --bg-card: #FFFFFF;
+        --text-main: #2C3E50;
+        --text-muted: #546E7A;
+        --success: #2E7D32;
+        --warning: #F9A825;
+        --shadow-sm: 0 4px 6px rgba(0,0,0,0.05);
+        --shadow-md: 0 10px 20px rgba(0,0,0,0.1);
+        --shadow-lg: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+
+    /* =============================================
+       LAYOUT UTAMA — ABSOLUT KUNCI 16:9
+    ============================================= */
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Hilangkan scrollbar */
+    background-color: #111; /* Warna latar belakang luar media */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+   #mpi-container {
+        width: 1280px !important; 
+        height: 720px !important; 
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: url('assets/latar.jpg') no-repeat center center;
+        background-size: cover;
+        box-shadow: 0 0 20px rgba(0,0,0,1);
+        
+        /* Pengaturan untuk Zoom Otomatis */
+        transform-origin: center center;
+        transform: translate(-50%, -50%) scale(1);
+        flex-shrink: 0;
+        container-type: size;
+        container-name: mpi;
+    }
+    .page {
+        display: none; width: 100%; height: 100%;
+        position: absolute; top: 0; left: 0;
+        flex-direction: column; z-index: 1;
+        background: transparent;
+    }
+    .page.active { display: flex; animation: fadeScale 0.5s ease forwards; }
+    @keyframes fadeScale { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+    /* =============================================
+       TOMBOL UMUM
+    ============================================= */
+    .btn {
+        background: var(--accent); color: white; border: none;
+        padding: clamp(8px, 1.5cqw, 12px) clamp(16px, 2.5cqw, 28px);
+        font-size: clamp(0.85rem, 1.5cqw, 1.1rem);
+        border-radius: 50px; cursor: pointer; transition: all 0.3s;
+        font-weight: 600; box-shadow: var(--shadow-md);
+        text-transform: uppercase; letter-spacing: 1px;
+    }
+    .btn:hover { background: #0D47A1; transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .btn-outline { background: rgba(255,255,255,0.9); color: var(--accent); border: 2px solid var(--accent); box-shadow: none; }
+    .btn-outline:hover { background: var(--accent); color: white; }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #F0F2F5; }
+    ::-webkit-scrollbar-thumb { background: #B0BEC5; border-radius: 10px; }
+
+    /* =============================================
+       1. COVER
+    ============================================= */
+    #page-cover { justify-content: center; align-items: center; text-align: center; padding: clamp(16px, 4cqw, 40px); }
+
+    .cover-title {
+        font-size: clamp(1.5rem, 4cqw, 3.5rem);
+        font-weight: 800; line-height: 1.25;
+        text-shadow: 2px 4px 12px rgba(0,0,0,0.9), 0 0 30px rgba(0,0,0,0.7);
+        margin-bottom: 8px; color: #fff;
+    }
+    .cover-subtitle {
+        font-size: clamp(0.8rem, 1.8cqw, 1.4rem);
+        letter-spacing: 1px; margin-bottom: clamp(16px, 3cqw, 40px);
+        color: #fff; text-shadow: 1px 2px 8px rgba(0,0,0,0.8);
+    }
+    .login-box {
+        background: rgba(255,255,255,0.82);
+        backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255,255,255,0.7);
+        padding: clamp(20px, 3cqw, 3rem); border-radius: 20px;
+        width: min(450px, 92cqw);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4); text-align: left;
+    }
+    .login-box label { font-size: clamp(0.8rem, 1.3cqw, 1rem); color: var(--text-main); font-weight: 600; margin-bottom: 6px; display: block; }
+    .login-box input {
+        width: 100%; padding: clamp(10px, 1.5cqw, 14px) clamp(12px, 1.8cqw, 20px);
+        margin-bottom: clamp(12px, 2cqw, 20px);
+        border: 2px solid #E0E0E0; border-radius: 10px;
+        font-size: clamp(0.85rem, 1.4cqw, 1.1rem);
+        color: var(--text-main); background: rgba(255,255,255,0.9); transition: 0.3s;
+    }
+    .login-box input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(198,40,40,0.15); }
+
+    /* =============================================
+       2. PANDUAN
+    ============================================= */
+    #page-guide { justify-content: center; align-items: center; padding: clamp(16px, 3cqw, 32px); }
+    .guide-box {
+        background: rgba(255,255,255,0.88);
+        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255,255,255,0.7);
+        padding: clamp(20px, 3cqw, 3.5rem); border-radius: 20px;
+        width: min(800px, 95cqw); max-height: 90cqh; overflow-y: auto;
+        box-shadow: var(--shadow-lg); border-top: 8px solid var(--primary);
+    }
+    .guide-box h2 { color: var(--primary); font-size: clamp(1.2rem, 2.5cqw, 2.5rem); margin-bottom: 1rem; }
+    .guide-box ul { font-size: clamp(0.85rem, 1.5cqw, 1.25rem); line-height: 1.8; margin-bottom: 1.5rem; padding-left: 20px; color: var(--text-main); }
+    .guide-box li { margin-bottom: 8px; }
+
+    /* =============================================
+       3. MENU
+    ============================================= */
+    #page-menu { position: relative; z-index: 1; }
+    #page-menu::before {
+        content: ""; position: absolute; inset: 0; z-index: -1;
+        background-image: radial-gradient(var(--primary-light) 1px, transparent 1px);
+        background-size: 30px 30px; opacity: 0.08;
+    }
+
+    .top-bar {
+        display: flex; justify-content: space-between; align-items: center;
+        background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        padding: clamp(8px, 1.5cqw, 15px) clamp(12px, 3cqw, 40px);
+        box-shadow: var(--shadow-sm); z-index: 10;
+        border-bottom: 3px solid var(--primary); flex-shrink: 0;
+    }
+    .top-bar-title { font-size: clamp(0.9rem, 1.8cqw, 1.5rem); font-weight: 800; color: var(--primary); }
+    .top-bar-user { font-size: clamp(0.75rem, 1.2cqw, 1.1rem); color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 8px; position: relative;
+        top: -2px;  /* Gunakan minus (-) untuk geser ke atas, plus (+) untuk ke bawah */
+        right: 100px; /* Gunakan right untuk geser menjauh dari kanan (ke arah tengah/kiri) */}
+    .user-badge { background: #E3F2FD; color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: clamp(0.7rem, 1.1cqw, 0.95rem); }
+
+    .menu-wrapper {
+        flex: 1; display: flex; flex-direction: column;
+        justify-content: center; align-items: center;
+        padding: clamp(12px, 2cqw, 20px); overflow-y: auto;
+    }
+    .menu-title-main {
+        font-size: clamp(1.1rem, 2.5cqw, 2.5rem); color: #fff;
+        margin-bottom: clamp(12px, 2.5cqw, 40px); font-weight: 800; text-align: center;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.7);
+    }
+    .menu-cards-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: clamp(10px, 2cqw, 35px);
+        width: min(950px, 96cqw);
+    }
+    .menu-card {
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: clamp(14px, 2.5cqw, 35px) clamp(8px, 1.5cqw, 20px);
+        text-align: center; cursor: pointer; transition: all 0.3s;
+        box-shadow: var(--shadow-md); border-bottom: 5px solid #E0E0E0;
+    }
+    .menu-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); border-bottom-color: var(--primary); }
+    .menu-icon { font-size: clamp(1.8rem, 3.5cqw, 4rem); margin-bottom: 8px; }
+    .menu-label { font-size: clamp(0.7rem, 1.2cqw, 1.2rem); font-weight: 800; color: var(--text-main); text-transform: uppercase; }
+    .menu-card.disabled { opacity: 0.6; pointer-events: none; border-bottom-color: #B0BEC5 !important; }
+
+    /* =============================================
+       4. KONTEN / SUB-PAGE
+    ============================================= */
+    .sub-page-area {
+        flex: 1; display: flex; flex-direction: column;
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        overflow: hidden; padding: clamp(10px, 2cqw, 20px) clamp(12px, 3cqw, 40px);
+    }
+    .section-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; height: 100%; }
+    #sect-tujuan { justify-content: center; align-items: center; }
+
+    .highlight-box {
+        background: #E3F2FD; padding: clamp(16px, 2.5cqw, 40px); border-radius: 15px;
+        border-top: 8px solid var(--accent);
+        font-size: clamp(0.85rem, 1.4cqw, 1.4rem); line-height: 1.8;
+        font-weight: 500; text-align: center;
+        width: min(900px, 100%); box-shadow: var(--shadow-md);
+    }
+
+    .term-box { background: #F0F7FF; border-left: 5px solid var(--accent); padding: clamp(10px, 1.5cqw, 15px) clamp(14px, 2cqw, 25px); border-radius: 0 10px 10px 0; margin: 10px 0; font-size: clamp(0.8rem, 1.2cqw, 1.05rem); color: #0D47A1; line-height: 1.6; }
+    .term-title { font-weight: 800; margin-bottom: 4px; color: var(--primary); text-transform: uppercase; font-size: clamp(0.75rem, 1.1cqw, 1rem); }
+    .fact-box { background: #FFF8E1; border-left: 5px solid #FF8F00; padding: clamp(10px, 1.5cqw, 15px) clamp(14px, 2cqw, 25px); border-radius: 0 10px 10px 0; margin: 10px 0; font-size: clamp(0.8rem, 1.2cqw, 1.05rem); color: #E65100; line-height: 1.6; }
+    .fact-title { font-weight: 800; margin-bottom: 4px; color: #E65100; text-transform: uppercase; font-size: clamp(0.75rem, 1.1cqw, 1rem); }
+
+    /* =============================================
+       SLIDE MATERI
+    ============================================= */
+    .slide { display: none; flex-direction: column; height: 100%; animation: fadeScale 0.4s; overflow: hidden; }
+    .slide.active { display: flex; }
+    .slide-wrapper { flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0; overflow: hidden; padding-bottom: 8px; width: 100%; max-width: 1100px; margin: 0 auto; }
+    .slide-title { color: var(--primary); font-size: clamp(1rem, 2cqw, 2.1rem); font-weight: 800; margin-bottom: clamp(8px, 1.5cqw, 20px); flex-shrink: 0; border-bottom: 2px solid #EEE; padding-bottom: 8px; }
+    .slide-content { display: flex; gap: clamp(12px, 2.5cqw, 40px); align-items: stretch; min-height: 0; flex-shrink: 1; overflow: hidden; padding-top: 8px; }
+    .slide-text { flex: 1.2; font-size: clamp(0.78rem, 1.2cqw, 1.15rem); line-height: 1.65; color: var(--text-main); max-height: 100%; overflow-y: auto; padding-right: 10px; text-align: justify; display: flex; flex-direction: column; }
+    .slide-text p { margin-bottom: 10px; }
+    .slide-img { flex: 0.8; min-height: clamp(140px, 20cqw, 350px); background: #ECEFF1; border-radius: 14px; border: 2px dashed #CFD8DC; display: flex; justify-content: center; align-items: center; font-size: 1rem; flex-shrink: 0; color: #90A4AE; font-weight: bold; overflow: hidden; }
+    /* Gambar inline di dalam slide-content */
+    .slide-content > div[style*="text-align: center"] {
+        flex: 0 0 auto;
+        width: 32%;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 0 !important;
+    }
+    .slide-content > div[style*="text-align: center"] img {
+        max-width: 100%;
+        max-height: clamp(100px, 18cqw, 280px);
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        object-fit: cover;
+    }
+    .slide-content > div[style*="text-align: center"] p {
+        font-size: clamp(0.55rem, 0.9cqw, 0.9rem);
+        margin-top: 6px;
+    }
+    .slide-controls { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 2px solid #F5F5F5; flex-shrink: 0; margin-top: 8px; }
+    .slide-progress { font-weight: bold; color: var(--text-muted); font-size: clamp(0.75rem, 1.2cqw, 1.2rem); background: #F0F2F5; padding: 6px 16px; border-radius: 20px; }
+
+    /* =============================================
+       KUIS EVALUASI
+    ============================================= */
+    .quiz-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; max-width: 900px; width: 100%; margin: 0 auto; position: relative; }
+    .question-card { display: none; background: white; padding: clamp(14px, 2cqw, 30px); border-radius: 15px; box-shadow: var(--shadow-md); border-top: 6px solid var(--accent); flex: 1; overflow-y: auto; }
+    .question-card.active { display: block; animation: fadeScale 0.4s; }
+    .question-text { font-size: clamp(0.85rem, 1.4cqw, 1.35rem); font-weight: 600; color: var(--text-main); margin-bottom: clamp(12px, 2cqw, 25px); line-height: 1.6; }
+    .q-input-text { width: 100%; padding: clamp(10px, 1.5cqw, 15px) clamp(12px, 1.8cqw, 20px); border: 2px solid #E0E0E0; border-radius: 10px; font-size: clamp(0.85rem, 1.3cqw, 1.2rem); font-weight: bold; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 14px; }
+    .q-input-text:focus { border-color: var(--accent); outline: none; }
+    .q-select { padding: 6px 12px; border: 2px solid #E0E0E0; border-radius: 8px; font-size: clamp(0.8rem, 1.2cqw, 1.1rem); color: var(--text-main); font-weight: bold; background: #F8F9FA; cursor: pointer; margin: 0 4px; }
+    .options-group { display: flex; flex-direction: column; gap: clamp(8px, 1.2cqw, 15px); }
+    .option-label { display: block; padding: clamp(10px, 1.3cqw, 15px) clamp(12px, 1.8cqw, 20px); background: #F8F9FA; border: 2px solid #E0E0E0; border-radius: 10px; cursor: pointer; transition: all 0.2s; font-size: clamp(0.8rem, 1.2cqw, 1.15rem); font-weight: 500; }
+    .option-label:hover { background: #E3F2FD; border-color: var(--accent); }
+    .option-label input { margin-right: 10px; transform: scale(1.2); }
+
+    /* Drag & Drop */
+    .drop-zones { display: flex; flex-direction: column; gap: clamp(8px, 1.2cqw, 15px); margin-bottom: clamp(12px, 2cqw, 25px); }
+    .drop-zone-wrapper { display: flex; align-items: center; gap: 10px; background: #FAFAFA; padding: clamp(8px, 1.3cqw, 15px); border-radius: 10px; border: 2px solid #EEE; }
+    .drop-label { flex: 1; font-weight: bold; font-size: clamp(0.8rem, 1.2cqw, 1.15rem); color: var(--text-main); }
+    .drop-zone { flex: 1; border: 2px dashed #90A4AE; background: #FFF; border-radius: 8px; min-height: clamp(44px, 6cqw, 60px); display: flex; align-items: center; justify-content: center; padding: 4px; }
+    .drag-pool { display: flex; gap: 10px; padding: clamp(10px, 1.5cqw, 20px); background: #F0F2F5; border: 2px dashed #B0BEC5; border-radius: 10px; min-height: clamp(60px, 8cqw, 85px); align-items: center; justify-content: center; flex-wrap: wrap; }
+    .drag-item { background: var(--accent); color: white; padding: clamp(8px, 1.2cqw, 12px) clamp(12px, 1.8cqw, 20px); border-radius: 8px; cursor: grab; font-weight: bold; font-size: clamp(0.78rem, 1.1cqw, 1.1rem); box-shadow: var(--shadow-sm); user-select: none; touch-action: none; }
+    .drag-item:active { cursor: grabbing; transform: scale(0.95); }
+
+    /* Feedback */
+    .feedback-box { display: none; padding: clamp(12px, 1.8cqw, 20px); margin-top: clamp(12px, 2cqw, 25px); border-radius: 10px; font-size: clamp(0.8rem, 1.2cqw, 1.15rem); line-height: 1.6; animation: fadeScale 0.3s; flex-shrink: 0; box-shadow: var(--shadow-sm); }
+    .feedback-box.correct { background: #E8F5E9; border-left: 6px solid #4CAF50; }
+    .feedback-box.wrong { background: #FFEBEE; border-left: 6px solid #F44336; }
+    .feedback-title { font-weight: 800; margin-bottom: 6px; font-size: clamp(0.85rem, 1.3cqw, 1.3rem); }
+    .feedback-exp { color: #333; font-size: clamp(0.78rem, 1.1cqw, 1.1rem); padding-top: 8px; border-top: 1px dashed rgba(0,0,0,0.2); margin-top: 8px; }
+
+    .quiz-controls { display: flex; justify-content: space-between; align-items: center; padding-top: clamp(12px, 1.8cqw, 20px); border-top: 2px solid #EEE; flex-shrink: 0; margin-top: clamp(10px, 1.5cqw, 20px); gap: 8px; }
+
+    #quiz-result-screen {
+        display: none; flex-direction: column; justify-content: center; align-items: center;
+        height: 100%; text-align: center; background: white; border-radius: 15px;
+        box-shadow: var(--shadow-md); padding: clamp(20px, 3cqw, 50px); animation: fadeScale 0.5s;
+        border-top: 8px solid var(--success);
+    }
+    #final-score-display { font-size: clamp(3rem, 8cqw, 6.5rem); font-weight: 900; color: var(--accent); margin: 10px 0; }
+
+    /* =============================================
+       5. SERTIFIKAT
+    ============================================= */
+    .cert-container { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 10px; }
+    #cert-wrapper {
+        background: #fff; border: 10px solid var(--primary);
+        outline: 3px solid var(--primary-light); outline-offset: -16px;
+        padding: clamp(20px, 3cqw, 40px) clamp(24px, 4cqw, 60px);
+        text-align: center; position: relative; border-radius: 10px;
+        box-shadow: var(--shadow-lg); width: min(900px, 96cqw);
+        font-family: 'Georgia','Times New Roman',serif;
+    }
+    .cert-head { font-size: clamp(1.2rem, 2.5cqw, 3rem); color: var(--primary); font-weight: 900; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 4px; }
+    .cert-sub { font-size: clamp(0.75rem, 1.2cqw, 1.2rem); color: #555; margin-bottom: clamp(10px, 2cqw, 25px); font-style: italic; }
+    .cert-name { font-size: clamp(1.1rem, 2.2cqw, 2.8rem); color: #111; font-weight: bold; border-bottom: 2px solid var(--primary); display: inline-block; padding: 0 clamp(16px, 3cqw, 40px) 4px; margin-bottom: 8px; }
+    .cert-school { font-size: clamp(0.8rem, 1.3cqw, 1.3rem); color: var(--accent); font-weight: 600; margin-bottom: clamp(10px, 2cqw, 25px); font-family: 'Segoe UI',Tahoma,sans-serif; }
+    .cert-desc { font-size: clamp(0.75rem, 1.1cqw, 1.15rem); line-height: 1.6; max-width: 750px; margin: 0 auto clamp(10px, 2cqw, 20px); color: #333; }
+    .cert-score-box { border: 3px solid var(--warning); background: #FFF8E1; color: var(--primary); padding: 8px clamp(16px, 2.5cqw, 30px); border-radius: 8px; font-size: clamp(1rem, 1.8cqw, 1.8rem); font-weight: 900; display: inline-block; margin-bottom: clamp(10px, 2cqw, 25px); }
+    .cert-footer { display: flex; justify-content: flex-end; margin-top: 4px; padding-right: 16px; }
+    .cert-sign { text-align: center; width: clamp(120px, 18cqw, 220px); }
+    .cert-sign-line { border-bottom: 2px solid #333; height: clamp(30px, 5cqw, 50px); margin-bottom: 6px; }
+    .cert-sign-name { font-weight: bold; font-size: clamp(0.75rem, 1.1cqw, 1.1rem); text-transform: uppercase; letter-spacing: 1px; }
+
+    /* =============================================
+       TOMBOL MENU UTAMA (bawah center)
+    ============================================= */
+    .bottom-nav {
+        display: flex; justify-content: center; align-items: center;
+        padding: clamp(6px, 1.2cqw, 10px) 0;
+        background: rgba(255,255,255,0.92);
+        border-top: 2px solid rgba(198,40,40,0.15);
+        flex-shrink: 0;
+    }
+/* =============================================
+       TOMBOL MUSIK (MELAYANG GLOBAL DI SEMUA HALAMAN)
+    ============================================= */
+    #btn-music {
+        position: absolute; 
+        top: clamp(1px, 0cqw, 0px); /* Angka diperkecil agar tombol naik */
+        right: clamp(15px, 3cqw, 30px);
+        z-index: 99999; /* Memastikan tombol selalu ada di lapisan paling atas */
+        
+        background-color: var(--primary); 
+        color: white;
+        border: 2px solid white; /* Memberi garis tepi putih agar menonjol */
+        padding: clamp(8px, 1.5cqw, 12px) clamp(16px, 2.5cqw, 20px); 
+        border-radius: 50px;
+        font-size: clamp(0.85rem, 1.2cqw, 1.1rem); 
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.4); 
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+       transform: scale(0.8); /* Angka 0.8 berarti 80% dari ukuran asli. Ubah ke 0.7 untuk lebih kecil */
+        transform-origin: bottom right; /* Menjaga titik pusatnya agar tetap di pojok (sesuaikan dengan posisi tombol Anda) */
+    }
+    
+    #btn-music:hover { 
+        background-color: var(--primary-light); 
+        /* Saat disentuh mouse, tombol sedikit membesar */
+        transform: scale(0.8) translateY(-3px); 
+        box-shadow: 0 6px 15px rgba(0,0,0,0.5);
+    }
+    /* =============================================
+       PRINT
+    ============================================= */
+    /* =============================================
+       MOBILE RESPONSIF — Landscape HP
+    ============================================= */
+
+    /* Pesan rotasi untuk HP yang dibuka portrait */
+    #rotate-notice {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 999999;
+        background: #111;
+        color: white;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-size: 1.1rem;
+        gap: 20px;
+        padding: 30px;
+    }
+    #rotate-notice .rotate-icon { font-size: 4rem; animation: rotateAnim 1.5s infinite; }
+    @keyframes rotateAnim {
+        0%   { transform: rotate(0deg); }
+        40%  { transform: rotate(90deg); }
+        60%  { transform: rotate(90deg); }
+        100% { transform: rotate(0deg); }
+    }
+
+    /* =============================================
+       MOBILE RESPONSIF — Landscape HP (max-height: 500px)
+    ============================================= */
+    @media screen and (max-height: 500px) and (orientation: landscape) {
+
+        /* Kunci container: susutkan tinggi jadi 96% dari tinggi viewport tersedia */
+        #mpi-container {
+            height: 96vh !important;
+            width: 170.67vh !important; /* 96vh * 16/9 */
+            max-height: 96vh !important;
+            max-width: 100vw !important;
+        }
+
+        /* ---- TOMBOL MUSIK: kecil & tidak terpotong ---- */
+        #btn-music {
+            top: 2px !important;
+            right: 6px !important;
+            padding: 3px 8px !important;
+            font-size: 0.62rem !important;
+            transform: none !important;
+            border-radius: 20px !important;
+            line-height: 1.4 !important;
+        }
+
+        /* ---- TOP-BAR: pipih ---- */
+        .top-bar {
+            padding: 3px 8px 3px 10px !important;
+            border-bottom-width: 2px !important;
+            min-height: 0 !important;
+        }
+        .top-bar-title {
+            font-size: 0.68rem !important;
+            font-weight: 700 !important;
+        }
+        .top-bar-user {
+            font-size: 0.6rem !important;
+            gap: 4px !important;
+        }
+        .user-badge {
+            font-size: 0.58rem !important;
+            padding: 2px 6px !important;
+        }
+
+        /* ---- BOTTOM-NAV: sangat tipis ---- */
+        .bottom-nav {
+            padding: 3px 0 !important;
+        }
+        .bottom-nav .btn {
+            padding: 3px 10px !important;
+            font-size: 0.6rem !important;
+            letter-spacing: 0 !important;
+        }
+
+        /* ---- TOMBOL UMUM SEMUA HALAMAN ---- */
+        .btn {
+            padding: 4px 10px !important;
+            font-size: 0.62rem !important;
+            letter-spacing: 0 !important;
+            border-radius: 30px !important;
+        }
+
+        /* ---- SLIDE MATERI ---- */
+        .sub-page-area {
+            padding: 4px 8px 4px 8px !important;
+        }
+        .slide-wrapper {
+            padding-bottom: 2px !important;
+        }
+        .slide-title {
+            font-size: 0.72rem !important;
+            margin-bottom: 3px !important;
+            padding-bottom: 3px !important;
+        }
+        .slide-content {
+            gap: 8px !important;
+            padding-top: 3px !important;
+        }
+        .slide-text {
+            font-size: 0.62rem !important;
+            line-height: 1.45 !important;
+            padding-right: 4px !important;
+        }
+        .slide-text p { margin-bottom: 4px !important; }
+        .term-box, .fact-box {
+            font-size: 0.58rem !important;
+            padding: 4px 8px !important;
+            margin: 4px 0 !important;
+            line-height: 1.4 !important;
+        }
+        .term-title, .fact-title {
+            font-size: 0.56rem !important;
+            margin-bottom: 1px !important;
+        }
+
+        /* Gambar di slide: proporsional, tidak overflow */
+        .slide-content > div[style*="text-align: center"] {
+            flex: 0 0 auto !important;
+            width: 30% !important;
+            margin: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
+        .slide-content > div[style*="text-align: center"] img {
+            max-width: 100% !important;
+            max-height: 100px !important;
+            border-radius: 6px !important;
+        }
+        .slide-content > div[style*="text-align: center"] p {
+            font-size: 0.5rem !important;
+            margin-top: 2px !important;
+        }
+
+        /* Kontrol slide prev/next/progress */
+        .slide-controls {
+            padding-top: 4px !important;
+            margin-top: 3px !important;
+        }
+        .slide-progress {
+            font-size: 0.6rem !important;
+            padding: 2px 8px !important;
+        }
+
+        /* ---- COVER ---- */
+        #page-cover { padding: 8px !important; }
+        .cover-title { font-size: 1.0rem !important; margin-bottom: 3px !important; }
+        .cover-subtitle { font-size: 0.62rem !important; margin-bottom: 8px !important; }
+        .login-box {
+            padding: 10px 12px !important;
+            border-radius: 10px !important;
+        }
+        .login-box label { font-size: 0.62rem !important; margin-bottom: 2px !important; }
+        .login-box input {
+            padding: 5px 8px !important;
+            font-size: 0.65rem !important;
+            margin-bottom: 6px !important;
+        }
+        .login-box button {
+            font-size: 0.65rem !important;
+            padding: 7px !important;
+            margin-top: 4px !important;
+        }
+
+        /* ---- PANDUAN ---- */
+        #page-guide { padding: 8px !important; }
+        .guide-box {
+            padding: 10px 12px !important;
+            border-radius: 10px !important;
+            border-top-width: 5px !important;
+        }
+        .guide-box h2 { font-size: 0.9rem !important; margin-bottom: 6px !important; }
+        .guide-box ul {
+            font-size: 0.62rem !important;
+            line-height: 1.5 !important;
+            margin-bottom: 8px !important;
+            padding-left: 14px !important;
+        }
+        .guide-box li { margin-bottom: 3px !important; }
+        .guide-box div[style*="border-top"] { padding-top: 8px !important; }
+
+        /* ---- MENU ---- */
+        .menu-wrapper { padding: 4px 8px !important; }
+        .menu-title-main { font-size: 0.78rem !important; margin-bottom: 6px !important; }
+        .menu-cards-container {
+            gap: 6px !important;
+            width: 98cqw !important;
+        }
+        .menu-card {
+            padding: 7px 5px !important;
+            border-radius: 8px !important;
+        }
+        .menu-icon { font-size: 1.1rem !important; margin-bottom: 3px !important; }
+        .menu-label { font-size: 0.55rem !important; }
+        .menu-wrapper > .btn {
+            margin-top: 8px !important;
+            font-size: 0.6rem !important;
+            padding: 4px 14px !important;
+        }
+
+        /* ---- TUJUAN ---- */
+        .highlight-box {
+            padding: 10px 12px !important;
+            font-size: 0.62rem !important;
+            line-height: 1.5 !important;
+        }
+        .highlight-box p { margin-bottom: 5px !important; }
+
+        /* ---- REFERENSI ---- */
+        #sect-referensi .highlight-box p {
+            font-size: 0.62rem !important;
+            margin-bottom: 8px !important;
+            line-height: 1.5 !important;
+        }
+
+        /* ---- REFLEKSI ---- */
+        #sect-refleksi > div {
+            padding: 6px !important;
+            min-height: 0 !important;
+        }
+        #sect-refleksi h2 {
+            font-size: 0.85rem !important;
+            margin-bottom: 5px !important;
+        }
+        #sect-refleksi > div > div > p {
+            font-size: 0.62rem !important;
+            margin-bottom: 8px !important;
+            line-height: 1.4 !important;
+        }
+        #sect-refleksi div[style*="background: white"] {
+            padding: 8px 10px !important;
+            font-size: 0.6rem !important;
+            margin-bottom: 6px !important;
+            line-height: 1.4 !important;
+        }
+        #sect-refleksi b[style] {
+            font-size: 0.65rem !important;
+        }
+        #sect-refleksi > div > div > p:last-child {
+            font-size: 0.58rem !important;
+            margin-top: 6px !important;
+        }
+
+        /* ---- KUIS ---- */
+        .quiz-controls#quiz-header {
+            margin-bottom: 6px !important;
+            padding-bottom: 5px !important;
+        }
+        .quiz-controls#quiz-header h3 {
+            font-size: 0.65rem !important;
+        }
+        .question-card {
+            padding: 8px 10px !important;
+            border-radius: 8px !important;
+            border-top-width: 4px !important;
+        }
+        .question-text {
+            font-size: 0.65rem !important;
+            margin-bottom: 8px !important;
+            line-height: 1.45 !important;
+        }
+        .question-text span[style*="font-size:1.8rem"] {
+            font-size: 1rem !important;
+            letter-spacing: 1px !important;
+        }
+        .options-group { gap: 4px !important; }
+        .option-label {
+            padding: 5px 8px !important;
+            font-size: 0.62rem !important;
+            border-radius: 6px !important;
+        }
+        .q-input-text {
+            padding: 5px 8px !important;
+            font-size: 0.65rem !important;
+            margin-bottom: 6px !important;
+        }
+        .q-select {
+            padding: 3px 6px !important;
+            font-size: 0.6rem !important;
+        }
+        /* Drag & Drop */
+        .drop-zones { gap: 4px !important; margin-bottom: 6px !important; }
+        .drop-zone-wrapper {
+            padding: 4px 6px !important;
+            border-radius: 6px !important;
+        }
+        .drop-label { font-size: 0.6rem !important; }
+        .drop-zone { min-height: 28px !important; }
+        .drag-pool { min-height: 36px !important; padding: 6px !important; gap: 5px !important; }
+        .drag-item {
+            padding: 4px 8px !important;
+            font-size: 0.6rem !important;
+            border-radius: 5px !important;
+        }
+        /* Feedback */
+        .feedback-box {
+            font-size: 0.6rem !important;
+            padding: 6px 8px !important;
+            margin-top: 6px !important;
+        }
+        .feedback-title { font-size: 0.65rem !important; }
+        .feedback-exp { font-size: 0.58rem !important; }
+        .quiz-controls:not(#quiz-header) {
+            padding-top: 6px !important;
+            margin-top: 4px !important;
+        }
+        /* Quiz Result Screen */
+        #quiz-result-screen {
+            padding: 12px !important;
+        }
+        #quiz-result-screen h2 {
+            font-size: 0.95rem !important;
+            margin-bottom: 5px !important;
+        }
+        #quiz-result-screen p { font-size: 0.62rem !important; }
+        #final-score-display { font-size: 2.8rem !important; margin: 4px 0 !important; }
+        #quiz-result-screen > p:last-of-type { margin-bottom: 10px !important; }
+
+        /* ---- SERTIFIKAT ---- */
+        .cert-container {
+            overflow-y: auto !important;
+            align-items: flex-start !important;
+            padding: 4px !important;
+        }
+        #cert-wrapper {
+            padding: 10px 14px !important;
+            border-width: 5px !important;
+            outline-offset: -8px !important;
+        }
+        .cert-head { font-size: 0.85rem !important; letter-spacing: 1px !important; }
+        .cert-sub { font-size: 0.58rem !important; margin-bottom: 5px !important; }
+        .cert-name { font-size: 0.8rem !important; padding: 0 10px 2px !important; }
+        .cert-school { font-size: 0.6rem !important; margin-bottom: 5px !important; }
+        .cert-desc { font-size: 0.58rem !important; margin-bottom: 6px !important; }
+        .cert-score-box { font-size: 0.72rem !important; padding: 4px 10px !important; margin-bottom: 6px !important; }
+        .cert-sign-line { height: 20px !important; }
+        .cert-sign-name { font-size: 0.58rem !important; }
+        .no-print > .btn { padding: 4px 12px !important; font-size: 0.6rem !important; }
+    }
+
+    @media print {
+        @page { size: A4 landscape; margin: 0; }
+        body * { visibility: hidden; }
+        body { background: white; margin: 0; padding: 0; }
+        #mpi-container { width: 100vw; height: 100vh; box-shadow: none; }
+        #sect-hasil, #sect-hasil * { visibility: visible; }
+        #sect-hasil { position: absolute; left: 0; top: 0; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background: white; }
+        .cert-container { padding: 0; }
+        #cert-wrapper { width: 290mm; height: 200mm; max-width: none; border-width: 15px; outline-offset: -25px; border-radius: 0; box-shadow: none; padding: 50px 70px; margin: 0; box-sizing: border-box; }
+        .no-print { display: none !important; }
+    }
+    </style>
+</head>
+<body>
+    <!-- Pesan rotasi untuk HP portrait -->
+    <div id="rotate-notice">
+        <div class="rotate-icon">📱</div>
+        <p><strong>Putar Perangkatmu!</strong></p>
+        <p style="font-size:0.95rem; color:#ccc;">Aplikasi ini dirancang untuk tampilan <b style="color:#fff;">Landscape (Horizontal)</b>.<br>Silakan putar HP kamu ke samping untuk pengalaman terbaik.</p>
+        <div style="margin-top:10px; display:flex; align-items:center; gap:12px; opacity:0.6; font-size:0.8rem;">
+            <span style="font-size:2rem; display:inline-block; transform:rotate(90deg);">📱</span>
+            <span>→</span>
+            <span style="font-size:2rem;">📱</span>
+        </div>
+    </div>
+
+    <div id="mpi-container">
+        <audio id="bg-music" loop>
+        <source src="assets/backsound.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="sound-klik">
+        <source src="assets/klik.mp3" type="audio/mpeg">
+    </audio>
+
+        <div id="page-cover" class="page active">
+            <h1 class="cover-title">Peluang dan Tantangan Pancasila<br>di Tengah Kehidupan Global</h1>
+            <p class="cover-subtitle">Multimedia Pembelajaran Interaktif Pendidikan Pancasila - Fase F</p>
+            <div class="login-box">
+                <label for="siswaNama">Nama Lengkap Siswa</label>
+                <input type="text" id="siswaNama" placeholder="Ketik nama Anda di sini..." required>
+                <label for="siswaSekolah">Asal Sekolah</label>
+                <input type="text" id="siswaSekolah" placeholder="Ketik nama sekolah Anda..." required>
+                <button class="btn" onclick="startApp()" style="width: 100%; font-size: clamp(0.65rem, 1.5cqw, 1.2rem); padding: clamp(7px, 1.5cqh, 16px); margin-top: clamp(4px, 1cqh, 15px);">Mulai Belajar Sekarang</button>
+            </div>
+        </div>
+
+        <div id="page-guide" class="page">
+            <div class="guide-box">
+                <h2><span>📖</span> Petunjuk Penggunaan</h2>
+                <ul>
+                    <li>Gunakan <b>Menu Pembelajaran</b> untuk menavigasi ke sub materi.</li>
+                    <li>Pada <b>Materi Pembahasan</b>, pelajari 15 slide konten secara berurutan.</li>
+                    <li>Selesaikan <b>10 Tipe Soal Kuis Evaluasi</b> dengan cermat (termasuk soal <i>Drag and Drop</i>).</li>
+                    <li>Selesaikan kuis untuk membuka kunci fitur <b>Cetak Sertifikat</b> kelulusan dan silahkan unduh sertifikatnya (tekan tombol Ctrl+P lalu simpan dalam bentuk pdf).</li>
+                </ul>
+                <div style="text-align: right; border-top: 2px solid #eee; padding-top: clamp(8px, 2.5cqh, 25px);">
+                    <button class="btn" onclick="gotoPage('page-menu')">Lanjut ke Menu Utama &#8594;</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-menu" class="page">
+            <div class="top-bar">
+                <div class="top-bar-title">🏛️ Pend. Pancasila</div>
+                <div class="top-bar-user">
+                    <span style="color:var(--text-main);">Halo, <b id="display-nama">Siswa</b></span>
+                    <span class="user-badge" id="display-sekolah">Sekolah</span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <h2 class="menu-title-main">Menu Pembelajaran</h2>
+                <div class="menu-cards-container">
+                    <div class="menu-card" onclick="openSection('sect-tujuan', 'Tujuan Pembelajaran')">
+                        <div class="menu-icon">🎯</div>
+                        <div class="menu-label">Tujuan Pembelajaran</div>
+                    </div>
+                    <div class="menu-card" onclick="openSection('sect-materi', 'Materi Pembahasan')">
+                        <div class="menu-icon">📖</div>
+                        <div class="menu-label">Materi Pembahasan</div>
+                    </div>
+                    <div class="menu-card" onclick="startQuiz()">
+                        <div class="menu-icon">📝</div>
+                        <div class="menu-label">Kuis Evaluasi</div>
+                    </div>
+                    <div class="menu-card" onclick="openSection('sect-referensi', 'Sumber Referensi')">
+    <div class="menu-icon">📚</div>
+    <div class="menu-label">Sumber Referensi</div>
+</div>
+<div class="menu-card" onclick="openSection('sect-refleksi', 'Refleksi')">
+    <div class="menu-icon">✍️</div>
+    <div class="menu-label">Refleksi</div>
+</div>
+                    <div class="menu-card disabled" id="btn-cert" onclick="openCert()">
+                        <div class="menu-icon">🏆</div><div class="menu-label">Cetak Sertifikat</div>
+                    </div>
+                </div>
+                <button class="btn-outline btn" onclick="location.reload()" style="margin-top: clamp(8px, 4.5cqh, 45px);">Keluar / Selesai</button>
+            </div>
+        </div>
+
+        <div id="page-content" class="page">
+            <div class="top-bar no-print">
+                <div class="top-bar-title" id="content-header">Judul Konten</div>
+            </div>
+            
+            <div class="sub-page-area">
+                
+                <div id="sect-tujuan" class="section-content" style="display:none;">
+                    <div class="highlight-box">
+                        <p style="margin-bottom: 15px;">Berdasarkan Capaian Pembelajaran, pada bab ini kamu diharapkan mampu menelaah <b>peluang dan tantangan penerapan Pancasila dalam kehidupan global</b> secara komprehensif.</p>
+                        <p>Oleh karena itu, kamu akan mengkaji berbagai kekuatan dan tantangan, baik dalam konteks nasional maupun pergaulan global yang sedang dihadapi oleh bangsa Indonesia. Kemudian, kamu juga akan menganalisis bagaimana nilai-nilai Pancasila digunakan untuk menjawab dan mengatasi tantangan-tantangan tersebut.</p>
+                    </div>
+                </div>
+                <div id="sect-referensi" class="section-content" style="display:none; justify-content: center; align-items: center;">
+    <div class="highlight-box" style="text-align: center; font-size: clamp(0.65rem, 1.2cqw, 1.2rem);">
+        <p style="margin-bottom: clamp(8px, 2.5cqh, 25px); color: var(--text-muted);">Materi dalam aplikasi pembelajaran ini disusun berdasarkan sumber referensi berikut:</p>
+        
+        <p style="margin-bottom: clamp(6px, 1.5cqh, 15px); color: var(--text-main); line-height: 1.6;">
+            <b>1. Rangkuman Materi Pendidikan Pancasila</b><br>
+            Kekuatan, Peluang, Kelemahan, dan Tantangan Bangsa dan Negara Indonesia
+        </p>
+        
+        <p style="margin-bottom: clamp(6px, 1.5cqh, 15px); color: var(--text-main); line-height: 1.6;">
+            <b>2. Salindia (PPT) Visual</b><br>
+            Pengantar Pancasila sebagai Kekuatan di Tengah Globalisasi
+        </p>
+        
+        <p style="margin-bottom: 0; color: var(--text-main); line-height: 1.6;">
+            <b>3. Buku Teks Siswa Pendidikan Pancasila</b><br>
+            Tingkat SMA/SMK sederajat terbitan Kemendikbudristek RI
+        </p>
+    </div>
+</div>
+<div id="sect-refleksi" class="section-content" style="display:none; height: 100%;">
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 65cqh; text-align: center; padding: clamp(8px, 2cqw, 20px);">
+        
+        <div style="max-width: 800px; width: 100%;">
+            <h2 style="color: var(--primary); margin-bottom: clamp(6px, 2cqh, 20px); font-size: clamp(0.9rem, 2.2cqw, 2.2rem);">Mari Berefleksi ✍️</h2>
+            
+            <p style="font-size: clamp(0.62rem, 1.2cqw, 1.2rem); line-height: 1.6; margin-bottom: clamp(8px, 3cqh, 30px); color: var(--text-main);">
+                Setelah mempelajari materi tentang peluang dan tantangan penerapan Pancasila dalam kehidupan global, mari sejenak merenungkan hal-hal berikut:
+            </p>
+            
+            <div style="background: white; padding: clamp(8px, 2cqw, 25px); border-radius: 12px; border-top: 4px solid var(--warning); margin-bottom: clamp(6px, 2cqh, 20px); font-size: clamp(0.62rem, 1.15cqw, 1.15rem); box-shadow: var(--shadow-sm); text-align: center;">
+                <b style="color: var(--warning); font-size: clamp(0.65rem, 1.25cqw, 1.25rem);">1. Evaluasi Diri</b><br><br>
+                Dari berbagai tantangan global (seperti individualisme, radikalisme, atau intoleransi), mana yang menurutmu paling sering kamu temui di lingkungan pergaulanmu sehari-hari?
+            </div>
+            
+            <div style="background: white; padding: clamp(8px, 2cqw, 25px); border-radius: 12px; border-top: 4px solid var(--success); margin-bottom: clamp(6px, 2cqh, 20px); font-size: clamp(0.62rem, 1.15cqw, 1.15rem); box-shadow: var(--shadow-sm); text-align: center;">
+                <b style="color: var(--success); font-size: clamp(0.65rem, 1.25cqw, 1.25rem);">2. Rencana Aksi</b><br><br>
+                Apa satu langkah kecil yang bisa kamu komitmenkan mulai hari ini sebagai pelajar untuk menerapkan nilai-nilai Pancasila sebagai "filter" dalam menggunakan media sosial?
+            </div>
+            
+            <p style="font-size: clamp(0.58rem, 1.1cqw, 1.1rem); color: var(--text-muted); margin-top: clamp(8px, 3cqh, 30px);">
+                <i>(Silakan tuliskan jawaban refleksimu di buku catatan atau diskusikan bersama teman kelasmu!)</i>
+            </p>
+        </div>
+    </div>
+</div>
+                <div id="sect-materi" class="section-content" style="display:none;">
+                    <div class="slide-wrapper">
+                        <div class="slide active" id="slide-1">
+                            <h2 class="slide-title">1. Dinamika Kehidupan Global</h2>
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <p>Pernahkah kamu menyadari betapa mudahnya kita mengetahui tren, berita, atau gaya hidup terbaru dari belahan dunia lain hanya dengan menatap layar <i>smartphone</i>? Itulah wujud nyata dari arus <b>globalisasi</b>.</p>
+                                    <p>Menurut Selo Soemardjan, tokoh sosiologi Indonesia, globalisasi didefinisikan sebagai terbentuknya sebuah sistem komunikasi dan organisasi di antara masyarakat yang berbeda di seluruh dunia untuk tujuan dan kaidah yang sama. Proses ini menghubungkan dunia seolah tanpa batas.</p>
+                                    <div class="term-box"><div class="term-title">🔎 Glosarium: Globalisasi</div>Proses menyatunya masyarakat dunia. Pertukaran informasi, ekonomi, dan budaya terjadi secara cepat seolah tanpa batas wilayah negara.</div>
+                                </div>
+                                <div style="text-align: center; margin: 20px 0;">
+    <img src="assets/gambar1.png" alt="Ilustrasi Jaringan Internet" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); object-fit: cover;">
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+        Ilustrasi gambar dibuat dengan gemini.
+    </p>
+</div>
+                            </div>
+                        </div>
+
+                        <div class="slide" id="slide-2">
+                            <h2 class="slide-title">2. Kekuatan Utama: Ideologi Pancasila</h2>
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <p>Di tengah pusaran arus globalisasi, kekuatan terbesar dan identitas utama bangsa kita adalah <b>Pancasila</b>. Pancasila berfungsi sebagai falsafah dasar, pandangan hidup bangsa, ideologi negara, kekuatan pemersatu, dan sumber dari segala sumber hukum di Indonesia.</p>
+                                    <p>Sebagai ideologi, Pancasila sangat istimewa karena menyeimbangkan kepentingan individu dengan kepentingan bersama. Hal ini berbeda dengan ideologi Komunisme yang mengabaikan hak individu, maupun Kapitalisme yang terlalu mengagungkan kebebasan pasar tanpa kendali.</p>
+                                    <div class="fact-box"><div class="fact-title">💡 Tahukah Kamu?</div>Nilai Pancasila melindungi segenap bangsa Indonesia berdasar atas persatuan untuk mewujudkan keadilan sosial bagi seluruh rakyatnya.</div>
+                                </div>
+                               <div style="text-align: center; margin: 20px 0;">
+    <img src="assets/gambar2.png" alt="Ilustrasi Jaringan Internet" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); object-fit: cover;">
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+        Ilustrasi gambar dibuat dengan gemini.
+    </p>
+</div>
+                            </div>
+                        </div>
+                        <div class="slide" id="slide-3">
+                            <h2 class="slide-title">3. Kekuatan Geografis: Posisi Silang Strategis</h2>
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <p>Secara fisik, Indonesia adalah negara kepulauan (maritim) terbesar di dunia dengan lebih dari 17.000 pulau. Lebih dari itu, letak geografis kita sangat strategis karena <b>diapit oleh dua benua (Asia dan Australia) serta dua samudra (Hindia dan Pasifik)</b>.</p>
+                                    <p>Posisi silang dunia ini menjadikan perairan Indonesia sebagai jalur utama pelayaran dan kapal dagang internasional. Secara politis dan ekonomi, negara-negara kuat di dunia sangat berkepentingan untuk menjalin hubungan baik dengan Indonesia.</p>
+                                    <div class="term-box"><div class="term-title">🌍 "A Smiling Nation"</div>Selain letak fisik, keramahan dan sikap toleransi masyarakat kita dikenal oleh bangsa lain sebagai daya tarik kuat di mata dunia.</div>
+                                </div>
+                                <div style="text-align: center; margin: 20px 0;">
+    <img src="assets/gambar3.png" alt="Ilustrasi Jaringan Internet" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); object-fit: cover;">
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+        Ilustrasi gambar dibuat dengan gemini.
+    </p>
+</div>
+                            </div>
+                        </div>
+
+                        <div class="slide" id="slide-4">
+                            <h2 class="slide-title">4. Kekuatan: Bonus Demografi</h2>
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <p>Dari segi kependudukan, saat ini bangsa Indonesia tengah mengalami fase emas yang disebut dengan <b>Bonus Demografi</b>. Penduduk usia produktif (usia 15-64 tahun) mendominasi struktur populasi kita.</p>
+                                    <p>Kondisi ini diproyeksikan akan terus meningkat dan berada pada puncaknya menjelang tahun 2040. Jika sumber daya manusia (SDM) yang melimpah ini dididik dengan baik, mereka akan menjadi motor penggerak ekonomi dan inovasi nasional yang tak tertandingi.</p>
+                                    <div class="fact-box"><div class="fact-title">📈 Fakta Kelas Menengah</div>Bank Dunia mencatat jumlah masyarakat kelas menengah di Indonesia terus bertambah pesat, yang berarti daya beli nasional semakin kuat.</div>
+                                </div>
+                               <div style="text-align: center; margin: 20px 0;">
+    <img src="assets/gambar4.png" alt="Ilustrasi Jaringan Internet" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); object-fit: cover;">
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+        Ilustrasi gambar dibuat dengan ChatGPT.
+    </p>
+</div>
+                            </div>
+                        </div>
+                        <div class="slide" id="slide-5">
+                            <h2 class="slide-title">5. Kekuatan: Multikulturalisme</h2>
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <p>Indonesia adalah laboratorium keberagaman dunia. Kita memiliki lebih dari 1.331 kelompok suku bangsa dan 719 bahasa daerah yang tersebar dari Sabang sampai Merauke.</p>
+                                    <p>Dalam bingkai <i>Bhinneka Tunggal Ika</i>, keberagaman ini tidak dilihat sebagai pemicu konflik, melainkan sebagai anugerah dan kekuatan kultural. Berbagai budaya saling melengkapi, menciptakan harmoni, dan menjadikan Indonesia kaya akan seni, tradisi, dan cara pandang.</p>
+                                    <div class="term-box"><div class="term-title">🤝 Glosarium: Multikulturalisme</div>Pemahaman atau pandangan yang secara sadar menghargai dan merayakan keragaman budaya di dalam masyarakat tanpa adanya diskriminasi.</div>
+                                </div>
+                               <div style="text-align: center; margin: 20px 0;">
+    <img src="assets/gambar5.png" alt="Ilustrasi Jaringan Internet" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); object-fit: cover;">
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+        Ilustrasi gambar dibuat dengan gemini.
+    </p>
+</div>
+                            </div>
+                        </div>
+                        <div class="slide" id="slide-6">
+                            <h2 class="slide-title">6. Kekuatan: Sumber Daya Alam Melimpah</h2>
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <p>Tuhan menganugerahi wilayah Indonesia dengan kekayaan alam yang luar biasa. Kita memiliki hamparan hutan hujan tropis terluas ketiga di dunia yang berfungsi sebagai "paru-paru dunia" untuk menjaga iklim global.</p>
+                                    <p>Selain potensi kehutanan dan agrikultur, bumi Indonesia juga menyimpan cadangan energi dan barang tambang bernilai tinggi yang diincar oleh pasar internasional, mulai dari batubara, emas, tembaga, hingga mineral masa depan.</p>
+                                    <div class="fact-box"><div class="fact-title">⚡ Fakta Mineral Kritis</div>Indonesia kini menjadi negara penghasil bijih Nikel terbesar di dunia, sebuah bahan baku paling vital dalam pembuatan baterai kendaraan listrik (EV).</div>
+                                </div>
+                                <div style="text-align: center; margin: 20px 0;">
+    <img src="assets/gambar6.png" alt="Ilustrasi Jaringan Internet" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); object-fit: cover;">
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+        Ilustrasi gambar dibuat dengan ChatGPT.
+    </p>
+</div>
+                            </div>
+                        </div>
+
+                        <div class="slide" id="slide-7">
+                            <h2 class="slide-title">7. Kekuatan Militer dan Pertahanan</h2>
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <p>Dalam ranah diplomasi dan keamanan global, kekuatan militer merupakan faktor <i>deterrence</i> (penangkal) yang penting. Kabar baiknya, kekuatan pertahanan udara, laut, dan darat Indonesia tidak dapat diremehkan.</p>
+                                    <p>Berdasarkan berbagai indeks lembaga independen, militer Indonesia secara konsisten menempati posisi puncak (Nomor 1) di wilayah Asia Tenggara (ASEAN) dan masuk ke dalam jajaran elit belasan besar militer terkuat di dunia.</p>
+                                    <div class="term-box"><div class="term-title">🛡️ Global Fire Power (GFP)</div>Situs yang merilis indeks kekuatan militer tahunan sebuah negara berdasarkan kapasitas logistik, finansial, dan SDM pertahanan.</div>
+                                </div>
+                                <div style="text-align: center; margin: 20px 0;">
+    <img src="assets/gambar7.png" alt="Ilustrasi Jaringan Internet" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); object-fit: cover;">
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+        Gambar diambil dari thumbnail channel youtube @DefenseWorldDW.
+    </p>
+</div>
+                            </div>
+                        </div>
+
+                        <div class="slide" id="slide-8">
+                            <h2 class="slide-title">8. Peluang Ekonomi dan Pariwisata</h2>
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <p>Memanfaatkan segala kekuatan geografis dan demografis tadi, lembaga konsultan global McKinsey memproyeksikan bahwa Indonesia dapat menjelma menjadi kekuatan ekonomi ke-7 terbesar di dunia pada tahun 2030.</p>
+                                    <p>Salah satu mesin penggerak ekonomi yang menjadi peluang emas kita adalah <b>Sektor Pariwisata</b>. Dengan pesona alam dan budaya yang memukau, pariwisata Indonesia terbukti mampu menarik jutaan investasi dan turis mancanegara setiap tahun, memberikan devisa yang besar bagi negara.</p>
+                                </div>
+                                <div style="text-align: center; margin: 20px 0;">
+    <img src="assets/gambar8.png" alt="Ilustrasi Jaringan Internet" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); object-fit: cover;">
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+        Ilustrasi gambar dibuat dengan ChatGPT.
+    </p>
+</div>
+                            </div>
+                        </div>
+
+                        <div class="slide" id="slide-9">
+                            <h2 class="slide-title">9. Peluang: Industri Halal Dunia</h2>
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <p>Sebagai negara berpenduduk muslim terbesar di dunia, Indonesia memiliki peluang raksasa untuk tidak hanya menjadi konsumen, tetapi menjadi "kiblat" atau produsen utama <b>Industri Halal Global</b>.</p>
+                                    <p>Potensi ini terus didorong oleh pemerintah melalui berbagai kemudahan sertifikasi dan promosi internasional agar produk-produk buatan anak bangsa bisa merajai pasar negara-negara Islam.</p>
+                                    <div class="term-box"><div class="term-title">🛒 Cakupan Industri Halal</div>Industri halal kini sangat luas; tidak hanya makanan, tetapi mencakup Keuangan Syariah, Pariwisata Halal, Pakaian (Modest Fashion), hingga Obat dan Kosmetik.</div>
+                                </div>
+                                <div style="text-align: center; margin: 20px 0;">
+    <img src="assets/gambar9.png" alt="Ilustrasi Jaringan Internet" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); object-fit: cover;">
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+        Ilustrasi gambar dibuat dengan gemini.
+    </p>
+</div>
+                            </div>
+                        </div>
+
+                        <div class="slide" id="slide-10">
+                            <h2 class="slide-title">10. Kelemahan: Pembangunan Belum Merata</h2>
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <p>Selain kekuatan, kita juga harus jujur melihat kelemahan diri untuk diperbaiki. Salah satu titik lemah bangsa kita adalah <b>Kesenjangan Ekonomi</b> dan pembangunan yang belum merata.</p>
+                                    <p>Selama puluhan tahun, perputaran ekonomi dan infrastruktur cenderung berpusat di pulau Jawa ("Jawa-sentris"). Akibatnya, daerah-daerah terluar dan pelosok tertinggal, memicu ketimpangan pendapatan antara si kaya dan si miskin.</p>
+                                    <div class="fact-box"><div class="fact-title">📊 Indeks Gini (Gini Ratio)</div>Parameter statistik yang digunakan pemerintah untuk mengukur tingkat ketimpangan distribusi pendapatan masyarakat (Skala 0-100).</div>
+                                </div>
+                               <div style="text-align: center; margin: 20px 0;">
+    <img src="assets/gambar10.png" alt="Ilustrasi Jaringan Internet" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); object-fit: cover;">
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+        Ilustrasi gambar dibuat dengan ChatGPT.
+    </p>
+</div>
+                            </div>
+                        </div>
+
+                        <div class="slide" id="slide-11">
+                            <h2 class="slide-title">11. Kelemahan: Kualitas SDM dan Korupsi</h2>
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <p>Meski jumlah pemuda kita banyak (Bonus Demografi), potensi tersebut terancam mubazir jika Indeks Modal Manusia (kualitas pendidikan & gizi) kita masih tertinggal dibanding negara tetangga.</p>
+                                    <p>Hambatan internal paling merusak lainnya adalah mentalitas <b>Korupsi, Kolusi, dan Nepotisme (KKN)</b> serta Pungutan Liar (Pungli). Praktik ini menciptakan birokrasi yang lambat, menakut-nakuti investor, dan menelan kerugian uang negara hingga ratusan triliun rupiah.</p>
+                                </div>
+                                <div style="text-align: center; margin: 20px 0;">
+    <img src="assets/gambar11.png" alt="Ilustrasi Jaringan Internet" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); object-fit: cover;">
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+        Gambar diperoleh dari media X @IndonesiaBaikId.
+    </p>
+</div>
+                            </div>
+                        </div>
+
+                        <div class="slide" id="slide-12">
+                            <h2 class="slide-title">12. Tantangan Global: Individualisme</h2>
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <p>Beralih ke tantangan eksternal (global), arus informasi asing seringkali menghembuskan budaya <b>Individualisme</b> secara agresif. Orang-orang di perkotaan semakin sibuk dengan gawai masing-masing dan mulai mengesampingkan tradisi gotong royong.</p>
+                                    <p>Selain itu, muncul pula ancaman <b>Kosmopolitanisme</b>, di mana generasi muda merasa sebagai "warga dunia" yang bebas sehingga perlahan-lahan kehilangan rasa cinta tanah air (nasionalisme).</p>
+                                    <div class="term-box"><div class="term-title">🌐 Kosmopolitanisme</div>Paham yang menganggap bahwa seluruh manusia adalah masyarakat tunggal global, seringkali menyepelekan batasan dan kedaulatan negara nasional.</div>
+                                </div>
+                               <div style="text-align: center; margin: 20px 0;">
+    <img src="assets/gambar12.png" alt="Ilustrasi Jaringan Internet" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); object-fit: cover;">
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+        Ilustrasi gambar dibuat dengan ChatGPT.
+    </p>
+</div>
+                            </div>
+                        </div>
+
+                        <div class="slide" id="slide-13">
+                            <h2 class="slide-title">13. Tantangan: Radikalisme & Pasar Bebas</h2>
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <p>Di bidang ekonomi, dunia global mendesakkan <b>Fundamentalisme Pasar</b>. Paham ini menuntut pemerintah lepas tangan, membiarkan pemodal besar bersaing bebas menelan pedagang kecil (UMKM) demi keuntungan maksimal.</p>
+                                    <p>Di bidang ideologi, internet memudahkan masuknya bibit-bibit <b>Radikalisme</b> dan ekstremisme. Paham-paham yang menolak konstitusi negara ini berpotensi memicu kekerasan dan memecah belah keutuhan bangsa.</p>
+                                </div>
+                               <div style="text-align: center; margin: 20px 0;">
+    <img src="assets/gambar13.png" alt="Ilustrasi Jaringan Internet" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); object-fit: cover;">
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+        Ilustrasi gambar dibuat dengan gemini.
+    </p>
+</div>
+                            </div>
+                        </div>
+
+                        <div class="slide" id="slide-14">
+                            <h2 class="slide-title">14. Tantangan: Intoleransi & Dominasi Budaya Asing</h2>
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <p>Ironisnya, di tengah keterbukaan global, sering muncul sikap <b>Intoleransi</b>, yakni keengganan menerima perbedaan keyakinan atau pendapat di lingkungan masyarakat sendiri yang dapat memicu konflik horizontal.</p>
+                                    <p>Tantangan kultural lainnya adalah dominasi budaya asing (seperti hegemoni film Hollywood, musik K-Pop, gaya pakaian barat). Jika tidak disaring, gaya hidup ini membuat generasi muda merasa malu atau melupakan warisan seni dan budaya lokal milik leluhur mereka.</p>
+                                </div>
+                                <div style="text-align: center; margin: 20px 0;">
+    <img src="assets/gambar14.png" alt="Ilustrasi Jaringan Internet" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); object-fit: cover;">
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+        Ilustrasi gambar dibuat dengan ChatGPT.
+    </p>
+</div>
+                            </div>
+                        </div>
+
+                        <div class="slide" id="slide-15">
+                            <h2 class="slide-title">15. Kesimpulan: Pancasila Bintang Penuntun</h2>
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <p>Untuk bertahan dan memenangkan persaingan global, bangsa Indonesia mutlak harus menggunakan Pancasila sebagai <b>Leitstar</b> (Bintang Penuntun) sekaligus alat penyaring (filter) peradaban.</p>
+                                    <p>Sila <i>Ketuhanan</i> menjaga moral dan mencegah ateisme. Sila <i>Kemanusiaan</i> menghalau perundungan/diskriminasi. Sila <i>Persatuan</i> menangkal radikalisme. Sila <i>Kerakyatan</i> menolak sikap otoriter, dan Sila <i>Keadilan</i> mewajibkan negara turun tangan membela rakyat kecil dari penindasan fundamentalisme pasar bebas.</p>
+                                </div>
+                                <div style="text-align: center; margin: 20px 0;">
+    <img src="assets/gambar15.png" alt="Ilustrasi Jaringan Internet" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); object-fit: cover;">
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+        Ilustrasi gambar dibuat dengan gemini.
+    </p>
+</div>
+                            </div>
+                        </div>
+
+                        <div class="slide-controls">
+                            <button class="btn btn-outline" id="btn-prev-slide" onclick="prevSlide()" style="display:none;">&#8592; Sebelumnya</button>
+                            <span class="slide-progress" id="slide-progress">Slide 1 dari 15</span>
+                            <button class="btn" id="btn-next-slide" onclick="nextSlide()">Selanjutnya &#8594;</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sect-kuis" class="section-content" style="display:none;">
+                    <div class="quiz-wrapper" id="quiz-container">
+                        
+                        <div class="quiz-controls" id="quiz-header" style="margin-bottom: clamp(5px, 2cqh, 20px); border-bottom: 2px solid #eee; padding-bottom: clamp(4px, 1cqh, 10px);">
+                            <h3 id="quiz-progress" style="color: var(--text-muted); font-size: clamp(0.65rem, 1.3cqw, 1.2rem);">Soal 1 dari 10</h3>
+                            <h3 style="color: var(--primary); font-size: clamp(0.65rem, 1.3cqw, 1.2rem);">Poin: <span id="quiz-score">0</span></h3>
+                        </div>
+
+                        <div class="question-card active" id="q1">
+                            <div class="question-text">1. (Menyusun Huruf) Proses menyatunya masyarakat dunia secara cepat tanpa batas ruang dan negara disebut dengan fenomena apa? Susunlah huruf acak di bawah ini menjadi istilah yang tepat!<br><br><span style="color:var(--primary); font-size:1.8rem; letter-spacing:3px;">L-I-B-A-S-O-G-L-I-A-S</span></div>
+                            <input type="text" id="ans-q1" class="q-input-text" placeholder="Ketik jawabanmu di sini...">
+                        </div>
+
+                        <div class="question-card" id="q2">
+                            <div class="question-text">2. (Pernyataan Opini) "Pancasila sudah tidak relevan dan pasti akan hancur digantikan oleh nilai-nilai kebebasan asing seiring dengan kencangnya arus globalisasi."<br><br>Apakah Anda YAKIN atau TIDAK YAKIN dengan kebenaran pernyataan di atas berdasarkan materi yang dipelajari?</div>
+                            <div class="options-group">
+                                <label class="option-label"><input type="radio" name="q2" value="YAKIN"> YAKIN, pernyataan tersebut benar.</label>
+                                <label class="option-label"><input type="radio" name="q2" value="TIDAK"> TIDAK YAKIN, pernyataan tersebut salah.</label>
+                            </div>
+                        </div>
+
+                        <div class="question-card" id="q3">
+                            <div class="question-text">3. (Benar/Salah) Konsep <i>Fundamentalisme Pasar</i> yang membiarkan pemodal raksasa memakan bisnis kecil demi meraup untung maksimal sangat sejalan dan didukung oleh prinsip Sistem Ekonomi Pancasila.</div>
+                            <div class="options-group">
+                                <label class="option-label"><input type="radio" name="q3" value="BENAR"> BENAR</label>
+                                <label class="option-label"><input type="radio" name="q3" value="SALAH"> SALAH</label>
+                            </div>
+                        </div>
+
+                        <div class="question-card" id="q4">
+                            <div class="question-text">4. (Uraian Singkat) Sebutkan istilah (satu kata) untuk paham atau gaya hidup yang menganggap bahwa seluruh manusia adalah "warga dunia" secara bebas, yang mana hal ini seringkali menyepelekan dan mengesampingkan rasa nasionalisme kebangsaan lokal!</div>
+                            <input type="text" id="ans-q4" class="q-input-text" placeholder="Ketik 1 kata jawaban...">
+                        </div>
+
+                        <div class="question-card" id="q5">
+                            <div class="question-text">5. (Melengkapi Kalimat Rumpang) Lengkapi paragraf di bawah ini dengan memilih kata yang tepat pada kotak (dropdown)!<br><br>
+                                Di era global, manusia seringkali terdorong bersikap egois dan hanya mementingkan keuntungan diri sendiri yang disebut dengan ancaman sikap <select id="ans-q5-1" class="q-select"><option value="">--Pilih--</option><option value="KORUPSI">Korupsi</option><option value="INDIVIDUALISME">Individualisme</option><option value="TOLERANSI">Toleransi</option></select>. Untuk mengatasi tantangan tersebut dan menjaga persatuan, bangsa Indonesia harus selalu berpedoman pada nilai-nilai <select id="ans-q5-2" class="q-select"><option value="">--Pilih--</option><option value="PANCASILA">Pancasila</option><option value="KAPITALISME">Kapitalisme</option><option value="GLOBALISASI">Globalisasi</option></select> sebagai Bintang Penuntun (Leitstar).
+                            </div>
+                        </div>
+
+                        <div class="question-card" id="q6">
+                            <div class="question-text">6. (Pilihan Ganda) Apa fungsi dan peran utama Pancasila dalam menghadapi derasnya arus kebudayaan dan nilai-nilai asing di era globalisasi?</div>
+                            <div class="options-group">
+                                <label class="option-label"><input type="radio" name="q6" value="A"> A. Mengisolasi dan menutup negara rapat-rapat dari pergaulan dunia internasional.</label>
+                                <label class="option-label"><input type="radio" name="q6" value="B"> B. Menjadi alat filter (penyaring) untuk menyesuaikan nilai asing dengan jati diri bangsa.</label>
+                                <label class="option-label"><input type="radio" name="q6" value="C"> C. Menghapus budaya lokal (tradisional) agar masyarakat Indonesia lebih modern.</label>
+                                <label class="option-label"><input type="radio" name="q6" value="D"> D. Meniru secara mutlak sistem ekonomi dan hukum negara-negara maju (barat).</label>
+                                <label class="option-label"><input type="radio" name="q6" value="E"> E. Mewajibkan seluruh warga negara untuk pindah dan menetap di luar negeri.</label>
+                            </div>
+                        </div>
+
+                        <div class="question-card" id="q7">
+                            <div class="question-text">7. (Pilihan Ganda Kompleks) Di bawah ini yang merupakan KEKUATAN (Strengths) atau Modal Dasar bangsa Indonesia untuk bersaing di dunia global adalah... <b>(Pilih 3 jawaban yang benar!)</b></div>
+                            <div class="options-group">
+                                <label class="option-label"><input type="checkbox" name="q7" value="A"> A. Memiliki Ideologi Pancasila yang kuat sebagai pemersatu.</label>
+                                <label class="option-label"><input type="checkbox" name="q7" value="B"> B. Adanya budaya Pungutan Liar (Pungli) yang mempercepat birokrasi daerah.</label>
+                                <label class="option-label"><input type="checkbox" name="q7" value="C"> C. Letak geografis negara yang sangat strategis di jalur silang dunia.</label>
+                                <label class="option-label"><input type="checkbox" name="q7" value="D"> D. Tingginya kesenjangan (ketimpangan) sosial ekonomi antar masyarakat.</label>
+                                <label class="option-label"><input type="checkbox" name="q7" value="E"> E. Sedang mengalami fase Bonus Demografi (usia produktif tinggi).</label>
+                            </div>
+                        </div>
+
+                        <div class="question-card" id="q8">
+                            <div class="question-text">8. (Analisis Kasus HOTS) Di sebuah sekolah, sekelompok siswa lebih bangga menggunakan bahasa asing dan meniru gaya hidup selebritas luar negeri. Mereka bahkan sering mengejek temannya yang berlatih tarian tradisional daerah. Berdasarkan nilai-nilai Pancasila, tindakan edukatif yang paling tepat untuk menangani kasus <i>krisis identitas</i> ini adalah...</div>
+                            <div class="options-group">
+                                <label class="option-label"><input type="radio" name="q8" value="A"> A. Melarang total penggunaan internet dan media sosial bagi seluruh siswa di sekolah tersebut.</label>
+                                <label class="option-label"><input type="radio" name="q8" value="B"> B. Menghukum siswa tersebut dengan hukuman fisik agar mereka takut meniru budaya luar.</label>
+                                <label class="option-label"><input type="radio" name="q8" value="C"> C. Memberikan edukasi literasi budaya lokal yang dikemas secara kreatif dan modern di sekolah.</label>
+                                <label class="option-label"><input type="radio" name="q8" value="D"> D. Membiarkan saja karena kebebasan berekspresi adalah hak asasi manusia di era global.</label>
+                                <label class="option-label"><input type="radio" name="q8" value="E"> E. Mengeluarkan siswa-siswa tersebut dari sekolah agar tidak merusak nama baik instansi.</label>
+                            </div>
+                        </div>
+
+                        <div class="question-card" id="q9">
+                            <div class="question-text">9. (Analisis Kasus HOTS) Sebuah perusahaan ritel multinasional berskala raksasa membuka cabang di pedesaan. Akibatnya, banyak toko kelontong dan pasar tradisional milik warga lokal yang terancam mati (bangkrut) karena kalah bersaing harga. Sebagai negara yang berpegang pada Sistem Ekonomi Pancasila (Sila ke-5), bagaimana pemerintah seharusnya menyikapi fenomena ini?</div>
+                            <div class="options-group">
+                                <label class="option-label"><input type="radio" name="q9" value="A"> A. Mendukung penuh perusahaan asing tersebut karena pasti memberikan pajak yang besar bagi negara.</label>
+                                <label class="option-label"><input type="radio" name="q9" value="B"> B. Segera menutup dan mengusir paksa seluruh perusahaan asing dari tanah air selamanya tanpa regulasi jelas.</label>
+                                <label class="option-label"><input type="radio" name="q9" value="C"> C. Menyalahkan pedagang lokal yang kolot karena tidak bisa beradaptasi dengan sistem mekanisme pasar bebas.</label>
+                                <label class="option-label"><input type="radio" name="q9" value="D"> D. Membuat regulasi zonasi ekonomi yang tegas serta memberikan bantuan modal dan pelatihan agar UMKM lokal berdaya.</label>
+                                <label class="option-label"><input type="radio" name="q9" value="E"> E. Mewajibkan seluruh warga desa untuk hanya berbelanja di perusahaan multinasional tersebut demi modernisasi.</label>
+                            </div>
+                        </div>
+
+                        <div class="question-card" id="q10">
+                            <div class="question-text">10. (Tarik dan Lepas / Drag & Drop) Jodohkanlah <b>Nilai Sila Pancasila</b> di bawah ini dengan <b>Ancaman Global</b> yang ditangkalnya dengan cara menarik (drag) kotak ancaman biru ke dalam area putus-putus yang tepat!</div>
+                            
+                            <div class="drop-zones">
+        <div class="drop-zone-wrapper">
+            <div class="drop-label">⭐ Sila ke-1 (Ketuhanan)</div>
+            <div class="drop-zone" id="dz-1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="allowDrop(event)"></div>
+        </div>
+        <div class="drop-zone-wrapper">
+            <div class="drop-label">🤝 Sila ke-3 (Persatuan)</div>
+            <div class="drop-zone" id="dz-2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="allowDrop(event)"></div>
+        </div>
+        <div class="drop-zone-wrapper">
+            <div class="drop-label">⚖️ Sila ke-5 (Keadilan)</div>
+            <div class="drop-zone" id="dz-3" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="allowDrop(event)"></div>
+        </div>
+    </div>
+
+    <div class="drag-pool" id="drag-pool" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="allowDrop(event)">
+        <div class="drag-item" id="drag-1" draggable="true" ondragstart="drag(event)">Ateisme Ekstrim</div>
+        <div class="drag-item" id="drag-2" draggable="true" ondragstart="drag(event)">Fundamentalisme Pasar</div>
+        <div class="drag-item" id="drag-3" draggable="true" ondragstart="drag(event)">Separatisme</div>
+    </div>
+                        </div>
+
+                        <div class="feedback-box" id="quiz-feedback"></div>
+                        
+                        <div class="quiz-controls" id="quiz-btn-controls">
+                            <button class="btn" id="btnCheck" onclick="checkAnswer()">Cek & Lihat Pembahasan</button>
+                            <button class="btn btn-outline" id="btnNext" onclick="nextQuestion()" style="display:none;">Lanjut Soal Berikutnya &#8594;</button>
+                            <button class="btn" id="btnFinish" onclick="finishQuiz()" style="display:none; background: var(--success);">Lihat Hasil Akhir Kuis</button>
+                        </div>
+
+                        <div id="quiz-result-screen">
+                            <h2 style="font-size: clamp(0.9rem, 2.8cqw, 2.8rem); color: var(--primary); margin-bottom: clamp(5px, 1.5cqh, 15px);">🎉 Selamat! Kamu Luar Biasa! 🎉</h2>
+                            <p style="font-size: clamp(0.62rem, 1.3cqw, 1.3rem); color: var(--text-main);">Kamu telah berhasil menyelesaikan seluruh kuis evaluasi dengan skor akhir:</p>
+                            <div id="final-score-display">0</div>
+                            <p style="font-size: clamp(0.6rem, 1.2cqw, 1.25rem); color: var(--text-muted); max-width: 650px; line-height: 1.6; margin-bottom: clamp(10px, 3.5cqh, 35px);">
+                                Silakan kembali ke Menu Pembelajaran utama. Kamu sekarang sudah dapat mengakses dan mengunduh bukti kelulusanmu melalui sub-menu <b>Cetak Sertifikat</b>.
+                            </p>
+                            <button class="btn" onclick="gotoPage('page-menu')" style="padding: clamp(5px, 1.5cqh, 15px) clamp(14px, 4cqw, 40px); font-size: clamp(0.62rem, 1.2cqw, 1.2rem);">Kembali ke Menu Pembelajaran</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sect-hasil" class="section-content" style="display:none;">
+                    <div class="cert-container">
+                        <div id="cert-wrapper">
+                            <div class="cert-head">Sertifikat Penghargaan</div>
+                            <div class="cert-sub">Diberikan atas partisipasi dan keberhasilannya menyelesaikan MPI:</div>
+                            <div class="cert-name" id="cert-nama-siswa">NAMA SISWA</div>
+                            <div class="cert-school" id="cert-asal-sekolah">Asal Sekolah</div>
+                            <div class="cert-desc">
+                                Telah berhasil menuntaskan materi pembelajaran <b>"Peluang dan Tantangan Penerapan Pancasila dalam Kehidupan Global"</b> dan dinyatakan LULUS evaluasi pemahaman dengan sangat baik.
+                            </div>
+                            <div class="cert-score-box">SKOR AKHIR: <span id="cert-skor"></span> / 100</div>
+                            <div class="cert-footer">
+                                <div class="cert-sign">
+                                    <div class="cert-sign-line"></div>
+                                    <div class="cert-sign-name">Guru Pengampu</div>
+                                    <div style="color: #777; font-size: 0.9rem;">Pendidikan Pancasila</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="no-print" style="text-align: center; padding-bottom: 20px;">
+                        <button class="btn" onclick="window.print()">🖨️ Cetak Sertifikat (PDF)</button>
+                    </div>
+                </div>
+
+            </div>
+            <!-- Tombol Menu Utama — bawah center -->
+            <div class="bottom-nav no-print">
+                <button class="btn btn-outline" onclick="gotoPage('page-menu')">🏠 Menu Utama</button>
+            </div>
+        </div>
+<button id="btn-music" onclick="toggleMusic()">🔇 Musik</button>
+    </div><!-- /#mpi-container -->
+
+    <script>
+        // --- FUNGSI MUSIK LATAR ---
+        let music = document.getElementById("bg-music");
+        let btnMusic = document.getElementById("btn-music");
+        let isPlaying = false;
+
+        function toggleMusic() {
+            if (isPlaying) {
+                music.pause();
+                btnMusic.innerText = "🔇 Musik";
+            } else {
+                music.play();
+                btnMusic.innerText = "🔊 Musik";
+            }
+            isPlaying = !isPlaying;
+        }
+
+        // Trik agar musik otomatis menyala saat layar pertama kali diklik/disentuh
+        document.body.addEventListener('click', function() {
+            if (!isPlaying) {
+                music.play().then(() => {
+                    isPlaying = true;
+                    btnMusic.innerText = "🔊 Musik";
+                }).catch(error => {
+                    // Jika browser tetap memblokir, abaikan saja (tunggu pengguna klik tombol manual)
+                    console.log("Autoplay dicegah browser, harus klik tombol manual.");
+                });
+            }
+        }, { once: true });
+        // --- DATA & LOGIKA UTAMA ---
+        let studentData = { nama: "", sekolah: "" };
+
+        function startApp() {
+            const inputNama = document.getElementById('siswaNama').value.trim();
+            const inputSekolah = document.getElementById('siswaSekolah').value.trim();
+            if(!inputNama || !inputSekolah) { alert("Harap isi Nama dan Asal Sekolah terlebih dahulu!"); return; }
+
+            studentData.nama = inputNama; studentData.sekolah = inputSekolah;
+            document.getElementById('display-nama').innerText = inputNama;
+            document.getElementById('display-sekolah').innerText = inputSekolah;
+            document.getElementById('cert-nama-siswa').innerText = inputNama;
+            document.getElementById('cert-asal-sekolah').innerText = inputSekolah;
+            gotoPage('page-guide');
+        }
+
+        function gotoPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function openSection(sectId, title) {
+            document.getElementById('content-header').innerText = title;
+            document.querySelectorAll('.section-content').forEach(s => s.style.display = 'none');
+            document.getElementById(sectId).style.display = 'flex';
+            if(sectId === 'sect-materi') { currentSlide = 1; updateSlideNav(); }
+            gotoPage('page-content');
+        }
+
+        // --- FUNGSI EFEK SUARA KLIK ---
+        function mainkanSuaraKlik() {
+            let suaraKlik = document.getElementById("sound-klik");
+            // Kembalikan ke detik 0 agar suara tidak "tersendat" jika diklik dengan sangat cepat
+            suaraKlik.currentTime = 0; 
+            suaraKlik.play().catch(error => console.log("Efek suara tertahan browser"));
+        }
+
+        // --- SISTEM SLIDE (15 Hal) ---
+        let currentSlide = 1; const totalSlides = 15;
+        function updateSlideNav() {
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            let active = document.getElementById(`slide-${currentSlide}`);
+            if(active) active.classList.add('active');
+            document.getElementById('slide-progress').innerText = `Slide ${currentSlide} dari ${totalSlides}`;
+            document.getElementById('btn-prev-slide').style.display = currentSlide === 1 ? 'none' : 'inline-block';
+            let nextBtn = document.getElementById('btn-next-slide');
+            if(currentSlide === totalSlides) {
+                nextBtn.innerText = 'Selesai & Ke Menu';
+                nextBtn.onclick = function() { gotoPage('page-menu'); };
+            } else {
+                nextBtn.innerText = 'Selanjutnya \u2192'; nextBtn.onclick = nextSlide;
+            }
+        }
+        function nextSlide() { if(currentSlide < totalSlides) { currentSlide++; updateSlideNav(); } }
+        function prevSlide() { if(currentSlide > 1) { currentSlide--; updateSlideNav(); } }
+
+        // --- SISTEM DRAG & DROP FUNGSI ---
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+        function drop(ev) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("text");
+            // Hanya izinkan drop di area kotak yang ditentukan atau kolam drag
+            if (ev.target.classList.contains('drop-zone') || ev.target.classList.contains('drag-pool')) {
+                ev.target.appendChild(document.getElementById(data));
+            }
+        }
+
+        // --- SISTEM KUIS EVALUASI (10 SOAL) ---
+        let currentQ = 1;
+        const totalQ = 10;
+        let totalScore = 0;
+
+        // Data Kunci Jawaban & Pembahasan
+        const quizData = {
+            1: { type: 'text', answer: 'GLOBALISASI', exp: 'Globalisasi adalah proses mendunianya suatu hal (informasi, ekonomi, budaya) sehingga batas antar negara seolah menjadi hilang atau memudar.' },
+            2: { type: 'radio', answer: 'TIDAK', exp: 'Kita <b>TIDAK YAKIN</b> (salah) bahwa nilai lokal pasti hancur. Pancasila justru hadir sebagai Bintang Penuntun dan filter tangguh yang mampu menangkal ancaman budaya asing jika diamalkan dengan benar.' },
+            3: { type: 'radio', answer: 'SALAH', exp: 'Pernyataan tersebut <b>SALAH</b>. Ekonomi Pancasila (Sila ke-5) sangat menentang Fundamentalisme Pasar Bebas yang membiarkan kesenjangan sosial. Negara harus hadir melindungi pihak yang lemah dan UMKM.' },
+            4: { type: 'text', answer: 'KOSMOPOLITANISME', exp: 'Kosmopolitanisme adalah paham yang menganggap bahwa seluruh manusia adalah masyarakat tunggal warga global, yang mana sikap ini seringkali dapat melunturkan jiwa nasionalisme kebangsaan lokal.' },
+            5: { type: 'rumpang', answer: ['INDIVIDUALISME', 'PANCASILA'], exp: 'Arus globalisasi memicu sikap egois mengurusi diri sendiri (Individualisme). Untuk mencegahnya, kita butuh landasan pemersatu (Leitstar) yaitu ideologi Pancasila.' },
+            6: { type: 'radio', answer: 'B', exp: 'Peran paling utama ideologi Pancasila di era global adalah sebagai alat <b>filter (penyaring)</b>. Pancasila menyaring budaya/nilai luar mana yang sesuai dan membuang yang tidak sesuai dengan jati diri bangsa.' },
+            7: { type: 'checkbox', answer: ['A', 'C', 'E'], exp: 'Kekuatan utama (modal) bangsa kita adalah: (A) Ideologi Pancasila, (C) Posisi letak geografis strategis di jalur silang, dan (E) Periode Bonus Demografi. Korupsi (Pungli) dan ketimpangan ekonomi adalah sebuah "Kelemahan/Tantangan".' },
+            8: { type: 'radio', answer: 'C', exp: 'Sikap pelarangan total (otoriter) tidak akan efektif di era digital yang serba terbuka. Tindakan (C) paling tepat dan sesuai nilai luhur persatuan, yaitu mengedukasi dan mengemas budaya lokal agar terlihat kreatif dan modern bagi anak muda.' },
+            9: { type: 'radio', answer: 'D', exp: 'Dalam asas keadilan sosial Pancasila, pemerintah tidak menolak investasi atau bisnis asing secara membabi buta, namun negara wajib mengatur (memberikan regulasi pelindung) dan memberdayakan masyarakat kecil/UMKM lokal agar mampu bersaing (jawaban D).' },
+            10: { type: 'dragdrop', answer: { 'dz-1': 'drag-1', 'dz-2': 'drag-3', 'dz-3': 'drag-2' }, exp: '<b>Sila ke-1</b> menolak keras paham Ateisme ekstrim, <b>Sila ke-3</b> menangkal masuknya ancaman Separatisme & Radikalisme yang dapat memecah belah bangsa, dan <b>Sila ke-5</b> melawan arus Fundamentalisme Pasar bebas yang menindas nasib rakyat kecil.' }
+        };
+
+        function startQuiz() {
+            openSection('sect-kuis', 'Kuis Evaluasi Terpadu');
+            currentQ = 1; totalScore = 0;
+            
+            // Tampilkan UI Kuis, Sembunyikan Result Screen
+            document.getElementById('quiz-result-screen').style.display = 'none';
+            document.getElementById('quiz-header').style.display = 'flex';
+            document.getElementById('quiz-btn-controls').style.display = 'flex';
+            
+            document.querySelectorAll('.question-card').forEach(q => q.classList.remove('active'));
+            document.getElementById('q1').classList.add('active');
+            
+            document.getElementById('quiz-feedback').style.display = 'none';
+            document.getElementById('btnCheck').style.display = 'inline-block';
+            document.getElementById('btnNext').style.display = 'none';
+            document.getElementById('btnFinish').style.display = 'none';
+            
+            document.getElementById('quiz-score').innerText = totalScore;
+            document.getElementById('quiz-progress').innerText = `Soal 1 dari ${totalQ}`;
+            
+            // Aktifkan kembali fungsi drag pada Drag & Drop jika kuis diulang
+            document.querySelectorAll('.drag-item').forEach(el => el.draggable = true);
+        }
+
+        function checkAnswer() {
+            let qData = quizData[currentQ];
+            let isCorrect = false;
+
+            // Validasi Input
+            if (qData.type === 'radio') {
+                let sel = document.querySelector(`input[name="q${currentQ}"]:checked`);
+                if(!sel) { alert("Pilih salah satu jawaban terlebih dahulu!"); return; }
+                if(sel.value === qData.answer) isCorrect = true;
+                document.querySelectorAll(`input[name="q${currentQ}"]`).forEach(el => el.disabled = true);
+            
+            } else if (qData.type === 'text') {
+                let val = document.getElementById(`ans-q${currentQ}`).value.trim().toUpperCase();
+                if(!val) { alert("Jawaban tidak boleh kosong!"); return; }
+                if(val === qData.answer) isCorrect = true;
+                document.getElementById(`ans-q${currentQ}`).disabled = true;
+
+            } else if (qData.type === 'checkbox') {
+                let sels = document.querySelectorAll(`input[name="q${currentQ}"]:checked`);
+                if(sels.length === 0) { alert("Pilih setidaknya satu jawaban!"); return; }
+                let vals = Array.from(sels).map(el => el.value).sort();
+                if(JSON.stringify(vals) === JSON.stringify(qData.answer.sort())) isCorrect = true;
+                document.querySelectorAll(`input[name="q${currentQ}"]`).forEach(el => el.disabled = true);
+
+            } else if (qData.type === 'rumpang') {
+                let val1 = document.getElementById(`ans-q${currentQ}-1`).value;
+                let val2 = document.getElementById(`ans-q${currentQ}-2`).value;
+                if(!val1 || !val2) { alert("Lengkapi semua bagian rumpang (dropdown) terlebih dahulu!"); return; }
+                if(val1 === qData.answer[0] && val2 === qData.answer[1]) isCorrect = true;
+                document.getElementById(`ans-q${currentQ}-1`).disabled = true;
+                document.getElementById(`ans-q${currentQ}-2`).disabled = true;
+                
+            } else if (qData.type === 'dragdrop') {
+                let correctCount = 0;
+                let expected = qData.answer;
+                for (let zoneId in expected) {
+                    let zone = document.getElementById(zoneId);
+                    let child = zone.firstElementChild;
+                    if(child && child.id === expected[zoneId]) {
+                        correctCount++;
+                    }
+                }
+                if (correctCount === 0 && document.getElementById('dz-1').children.length === 0 && document.getElementById('dz-2').children.length === 0 && document.getElementById('dz-3').children.length === 0) {
+                    alert("Tarik (drag) setidaknya satu jawaban ke dalam kotak putus-putus!"); return;
+                }
+                
+                if(correctCount === 3) isCorrect = true;
+                document.querySelectorAll('.drag-item').forEach(el => el.draggable = false); // matikan drag setelah dicek
+            }
+            
+            // Tampilkan Feedback & Pembahasan
+            let fb = document.getElementById('quiz-feedback');
+            fb.className = 'feedback-box ' + (isCorrect ? 'correct' : 'wrong');
+            fb.innerHTML = `
+                <div class="feedback-title">${isCorrect ? '✅ Jawaban Kamu Tepat!' : '❌ Jawaban Kurang Tepat'}</div>
+                <div class="feedback-exp"><b>Pembahasan:</b><br>${qData.exp}</div>
+            `;
+            fb.style.display = 'block';
+
+            if(isCorrect) {
+                totalScore += (100 / totalQ); // Poin 10 per soal (10 soal x 10 = 100)
+                document.getElementById('quiz-score').innerText = Math.round(totalScore);
+            }
+            
+            document.getElementById('btnCheck').style.display = 'none';
+            if (currentQ < totalQ) {
+                document.getElementById('btnNext').style.display = 'inline-block';
+            } else {
+                document.getElementById('btnFinish').style.display = 'inline-block';
+            }
+        }
+
+        function nextQuestion() {
+            document.getElementById(`q${currentQ}`).classList.remove('active');
+            currentQ++;
+            document.getElementById(`q${currentQ}`).classList.add('active');
+            
+            document.getElementById('quiz-feedback').style.display = 'none';
+            document.getElementById('btnCheck').style.display = 'inline-block';
+            document.getElementById('btnNext').style.display = 'none';
+            document.getElementById('quiz-progress').innerText = `Soal ${currentQ} dari ${totalQ}`;
+        }
+
+        function finishQuiz() {
+            let finalScore = Math.round(totalScore);
+            document.getElementById('cert-skor').innerText = finalScore;
+            document.getElementById('final-score-display').innerText = finalScore;
+            
+            // Buka kunci tombol sertifikat
+            document.getElementById('btn-cert').classList.remove('disabled');
+            
+            // Sembunyikan Soal & Kontrol, Tampilkan Layar Apresiasi
+            document.getElementById(`q${currentQ}`).classList.remove('active');
+            document.getElementById('quiz-feedback').style.display = 'none';
+            document.getElementById('quiz-header').style.display = 'none';
+            document.getElementById('quiz-btn-controls').style.display = 'none';
+            
+            document.getElementById('quiz-result-screen').style.display = 'flex';
+        }
+
+        // --- FUNGSI SERTIFIKAT ---
+        function openCert() {
+            if(document.getElementById('btn-cert').classList.contains('disabled')) {
+                alert("Kamu harus menyelesaikan seluruh Kuis Evaluasi terlebih dahulu untuk membuka Sertifikat!"); return;
+            }
+            openSection('sect-hasil', 'Sertifikat Kelulusan');
+        }
+        // Pasang suara klik ke semua tombol yang ada di layar
+        document.querySelectorAll('button').forEach(tombol => {
+            tombol.addEventListener('click', mainkanSuaraKlik);
+        });
+        
+        // (Opsional) Jika navigasi Anda juga menggunakan kotak/div yang bisa diklik
+        document.querySelectorAll('.menu-card').forEach(kartu => {
+            kartu.addEventListener('click', mainkanSuaraKlik);
+        });
+function scaleMPI() {
+        const container = document.getElementById('mpi-container');
+        const notice = document.getElementById('rotate-notice');
+        if (!container) return;
+
+        const winW = window.innerWidth;
+        const winH = window.innerHeight;
+
+        // Deteksi apakah perangkat adalah HP/tablet berdasarkan lebar layar
+        const isMobile = winW <= 1024 || ('ontouchstart' in window);
+
+        // 1. Deteksi Portrait pada perangkat mobile → tampilkan peringatan rotasi
+        if (isMobile && winH > winW) {
+            if (notice) {
+                notice.style.display = 'flex';
+            }
+            // Jangan render container di portrait
+            container.style.visibility = 'hidden';
+            return;
+        } else {
+            if (notice) {
+                notice.style.display = 'none';
+            }
+            container.style.visibility = 'visible';
+        }
+
+        // 2. Mode Landscape (Normal) — hitung skala proporsional 16:9
+        const scaleW = winW / 1280;
+        const scaleH = winH / 720;
+        const scale = Math.min(scaleW, scaleH);
+
+        container.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    }
+
+    // Jalankan saat halaman pertama kali dimuat
+    window.addEventListener('DOMContentLoaded', scaleMPI);
+    // Jalankan ulang saat ukuran window berubah (termasuk rotasi HP)
+    window.addEventListener('resize', scaleMPI);
+    // Jalankan ulang saat orientasi berubah (API khusus mobile)
+    window.addEventListener('orientationchange', function() {
+        // Tunggu sebentar agar browser selesai mengubah dimensi viewport
+        setTimeout(scaleMPI, 200);
+    });
+    </script>
+    <link rel="stylesheet" href="https://unpkg.com/mobile-drag-drop/default.css">
+    <script src="https://unpkg.com/mobile-drag-drop/index.min.js"></script>
+    <script>
+        // Aktifkan penerjemah sentuhan jari menjadi klik mouse
+        MobileDragDrop.polyfill({
+            dragImageTranslateOverride: MobileDragDrop.scrollBehaviourDragImageTranslateOverride
+        });
+        
+        // Mencegah layar HP ikut ter-scroll saat siswa menyeret kotak jawaban
+        window.addEventListener('touchmove', function(e) {
+            if(e.target.classList && e.target.classList.contains('drag-item')) {
+                e.preventDefault();
+            }
+        }, {passive: false});
+    </script>
+</body>
+</html>
